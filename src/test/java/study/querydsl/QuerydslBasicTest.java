@@ -1,6 +1,7 @@
 package study.querydsl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static study.querydsl.entity.QMember.member;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.entity.Member;
-import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
 @SpringBootTest
@@ -25,7 +25,7 @@ public class QuerydslBasicTest {
     @BeforeEach
     void before() {
         queryFactory = new JPAQueryFactory(em);
-        
+
         Team teamA = new Team("teamA");
         Team teamB = new Team("teamB");
         em.persist(teamA);
@@ -57,12 +57,10 @@ public class QuerydslBasicTest {
 
     @Test
     void startQuerydsl() {
-        QMember m = new QMember("m");
-
         Member findMember = queryFactory
-            .select(m)
-            .from(m)
-            .where(m.username.eq("member1"))
+            .select(member)
+            .from(member)
+            .where(member.username.eq("member1"))
             .fetchOne();
 
         assertThat(findMember.getUsername()).isEqualTo("member1");
