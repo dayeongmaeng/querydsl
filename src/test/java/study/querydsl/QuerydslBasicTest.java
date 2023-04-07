@@ -11,6 +11,7 @@ import static study.querydsl.entity.QTeam.team;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -604,4 +605,36 @@ public class QuerydslBasicTest {
             .where(builder)
             .fetch();
     }
+
+    @Test
+    void dynamicQuery_WhereParam() {
+        String usernameParam = "member1";
+        Integer ageParam = null;
+
+        List<Member> result = searchMember2(usernameParam, ageParam);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember2(String usernameCond, Integer ageCond) {
+        return queryFactory
+            .selectFrom(member)
+            .where(usernameEq(usernameCond), ageEq(ageCond))
+            //.where(allEq(usernameCond, ageCond))
+            .fetch();
+    }
+
+    private BooleanExpression usernameEq(String usernameCond) {
+        return usernameCond != null ? member.username.eq(usernameCond) : null;
+    }
+
+    private BooleanExpression ageEq(Integer ageCond) {
+        return ageCond != null ? member.age.eq(ageCond) : null;
+    }
+
+    //광고 상태 isVaild, 날짜 IN : isServicable
+    private BooleanExpression isServicable(String usernameCond, Integer ageCond) {
+        return usernameEq(usernameCond).and(ageEq(ageCond));
+    }
+
+    //메서드를 각각 빼놓고 사용하는 것이 재활용 하는 것에 더 이점이 있음
 }
