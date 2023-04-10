@@ -1,6 +1,7 @@
 package study.querydsl.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static study.querydsl.entity.QMember.member;
 
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -90,6 +91,15 @@ class MemberRepositoryTest {
         assertThat(result.getSize()).isEqualTo(3);
         assertThat(result.getContent()).extracting("username")
             .containsExactly("member1", "member2", "member3");
+    }
 
+    @Test
+    void querydslPridicateExcutorTest() {
+        Iterable<Member> result = memberRepository.findAll(
+            member.age.between(10, 40)
+                .and(member.username.eq("member1")));
+        for (Member findMember : result) {
+            System.out.println("findMember = " + findMember);
+        }
     }
 }
